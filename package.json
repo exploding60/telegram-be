@@ -1,0 +1,41 @@
+{
+  "name": "telegram-be",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exploding60/telegram-be.git"
+  },
+  "bugs": {
+    "url": "https://github.com/exploding60/telegram-be/issues"
+  },
+  "homepage": "https://github.com/exploding60/telegram-be#readme",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "env": "^0.0.2",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "helmet": "^6.0.1",
+    "http-errors": "^2.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "multer-storage-cloudinary": "^4.0.0",
+    "nodemon": "^2.0.20",
+    "pg": "^8.8.0",
+    "socket.io": "^4.5.4",
+    "uuid": "^9.0.0",
+    "xss-clean": "^0.1.1"
+  }
+}
