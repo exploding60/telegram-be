@@ -35,6 +35,7 @@ const userController = {
   login: async (req, res) => {
     try {
       const email = req.body.email;
+      console.log(email, "email");
       let {
         rows: [users],
       } = await ModelUsers.checkEmail(email);
@@ -50,7 +51,10 @@ const userController = {
         return response(res, 404, false, null, "wrong password");
       }
       const id = users.id;
+      const username = users.username;
       const data = {
+        id,
+        username,
         email,
         token: await generateToken(email, id),
         // refreshToken: await generateRefreshToken(email, id),

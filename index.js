@@ -30,38 +30,32 @@ app.use(morgan("dev"));
 app.use("/auth", userRouter);
 app.use("/profile", profileRouter);
 //
-const io = new Server(httpServer, {
+const socketIO = new Server(httpServer, {
   cors: {
     origin: "http://localhost:3000",
   },
 });
+let users = [];
+socketIO.on("connection", (socket) => {
+  console.log(`⚡: ${socket.id} user just connected!`);
+  socket.on("message", (data) => {
+    socketIO.emit("messageResponse", data);
+  });
+  //////////////////////////
+  socket.on("typing", (data) => socket.broadcast.emit("typingResponse", data));
 
-const users = {};
-io.on(
-  "connection",
-  (socket) => {
-    console.log("device connect with id = " + socket.id);
-    socket.on("sendMessage", (data) => {
-      console.log(data);
-      io.emit("incoming", data);
-    });
-    socket.on("present", (data) => {
-      users[socket.id] = data;
-      console.log(users);
-      io.emit("online", users);
-    });
-    socket.on("close", () => {
-      socket.disconnect();
-    });
-    socket.on("disconnect", () => {
-      delete users[socket.id];
-      io.emit("online", users);
-      console.log("device disconnect");
-      console.log(users);
-    });
-  },
-  []
-);
+  socket.on("newUser", (data) => {
+    users.push(data);
+    socketIO.emit("newUserResponse", users);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("🔥: A user disconnected");
+    users = users.filter((user) => user.socketID !== socket.id);
+    socketIO.emit("newUserResponse", users);
+    socket.disconnect();
+  });
+});
 
 app.get("/", (req, res, next) => {
   res.status(200).json({ status: "success", statusCode: 200 });
