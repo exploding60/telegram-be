@@ -1,66 +1,32 @@
 require("dotenv").config();
+
 const express = require("express");
-const { createServer } = require("http");
-const morgan = require("morgan");
-const { Server } = require("socket.io");
-const userRouter = require("./src/routes/users");
-const profileRouter = require("./src/routes/profile");
 const app = express();
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const { response } = require("./src/helpers/common");
-
+const socket = require("socket.io");
+const router = require("./src/routes/index");
+const socketController = require("./src/sockets/index");
+const http = require("http");
 const cors = require("cors");
-const httpServer = createServer(app);
-const PORT = process.env.PORT;
-const xss = require("xss-clean");
-
-const corsOptions = {
-  origin: "*",
-  credentials: true, //access-control-allow-credentials:true
-  optionSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
-app.use(cookieParser());
+app.use(express.static("public"));
+app.use(cors());
 app.use(bodyParser.json());
-app.use(xss());
-app.use(morgan("dev"));
+app.use("/", router);
 
-//ROUTE
-app.use("/auth", userRouter);
-app.use("/profile", profileRouter);
-//
-const socketIO = new Server(httpServer, {
+const server = http.createServer(app);
+const io = socket(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
   },
 });
-let users = [];
-socketIO.on("connection", (socket) => {
-  console.log(`⚡: ${socket.id} user just connected!`);
-  socket.on("message", (data) => {
-    socketIO.emit("messageResponse", data);
-  });
-  //////////////////////////
-  socket.on("typing", (data) => socket.broadcast.emit("typingResponse", data));
 
-  socket.on("newUser", (data) => {
-    users.push(data);
-    socketIO.emit("newUserResponse", users);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("🔥: A user disconnected");
-    users = users.filter((user) => user.socketID !== socket.id);
-    socketIO.emit("newUserResponse", users);
-    socket.disconnect();
-  });
+io.on("connection", (socket) => {
+  console.log("new user connect");
+  socketController(io, socket);
 });
 
-app.get("/", (req, res, next) => {
-  res.status(200).json({ status: "success", statusCode: 200 });
-});
+const PORT = process.env.PORT || 4010;
 
-httpServer.listen(PORT, () => {
-  console.log(`app running on ${PORT}`);
+server.listen(PORT, () => {
+  console.log("listening on port " + PORT);
 });

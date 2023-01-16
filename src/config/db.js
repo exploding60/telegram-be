@@ -7,7 +7,7 @@ const connect =
 const pool = new Pool({
   user: "doadmin",
   host: "pijardb-do-user-13063919-0.b.db.ondigitalocean.com",
-  database: "telegram",
+  database: "telechat",
   password: "AVNS__jiEz59TUHpRaJ-lQe1",
   port: "25060",
   ssl: true,

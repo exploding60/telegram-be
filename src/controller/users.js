@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 const { generateToken } = require("../helpers/jwt");
 // const email = require("../middlewares/email");
-const ModelUsers = require("../model/users.model");
+const ModelUsers = require("../model/users");
 
 const userController = {
   register: async (req, res) => {
@@ -20,6 +20,7 @@ const userController = {
       email: req.body.email,
       password,
       username: req.body.username,
+      number: req.body.number,
     };
 
     try {
@@ -51,22 +52,24 @@ const userController = {
         return response(res, 404, false, null, "wrong password");
       }
       const id = users.id;
-      const username = users.username;
-      const data = {
-        id,
-        username,
-        email,
-        token: await generateToken(email, id),
-        // refreshToken: await generateRefreshToken(email, id),
-      };
-      res.cookie("user", data.token, {
-        httpOnly: true,
-        secure: false,
-        maxAge: 3600000,
-      });
-      response(res, 200, true, data, "LOGIN SUCCESS");
+      const fullname = users.fullname;
+
+      const token = await generateToken(email, id);
+
+      response(res, 200, true, { token, data: users }, "LOGIN SUCCESS");
     } catch (err) {
       return response(res, 404, false, err, "LOGIN FAILED");
+    }
+  },
+  getAll: async (req, res) => {
+    try {
+      const result = await ModelUsers.getAll();
+      if (result) {
+        console.log(result);
+        response(res, 200, true, result.rows, "register success,Please Login");
+      }
+    } catch (err) {
+      response(res, 404, false, err, " register fail");
     }
   },
 };

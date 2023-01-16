@@ -29,7 +29,19 @@ const checkEmail = (email) => {
   );
 };
 
+const getAll = () => {
+  return new Promise((resolve, reject) =>
+    pool.query(`SELECT * FROM users`, (err, result) => {
+      if (!err) {
+        resolve(result);
+      } else {
+        reject(err);
+      }
+    })
+  );
+};
 module.exports = {
   createUsers,
   checkEmail,
+  getAll,
 };
