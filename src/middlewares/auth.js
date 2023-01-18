@@ -1,5 +1,5 @@
 const { verify } = require("../helpers/jwt");
-const { response } = require("../helpers/common");
+const { response } = require("./common");
 const createError = require("http-errors");
 
 module.exports.user = async (req, res, next) => {

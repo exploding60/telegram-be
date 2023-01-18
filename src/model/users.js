@@ -40,8 +40,26 @@ const getAll = () => {
     })
   );
 };
+
+const update = (data) => {
+  const { id, phonenumber, bio, username, photo } = data;
+  return new Promise((resolve, reject) =>
+    pool.query(
+      `UPDATE users SET username='${username}',photo='${photo}',bio='${bio}',number='${phonenumber}' where id='${id}'`,
+      (err, result) => {
+        if (!err) {
+          resolve(result);
+        } else {
+          reject(err);
+        }
+      }
+    )
+  );
+};
+
 module.exports = {
   createUsers,
   checkEmail,
   getAll,
+  update,
 };

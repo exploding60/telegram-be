@@ -1,10 +1,10 @@
-const { response } = require("../helpers/common");
+const { response } = require("../middlewares/common");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 const { generateToken } = require("../helpers/jwt");
 // const email = require("../middlewares/email");
 const ModelUsers = require("../model/users");
-
+const cloudinary = require("../config/cloudinary");
 const userController = {
   register: async (req, res) => {
     let {
@@ -20,7 +20,6 @@ const userController = {
       email: req.body.email,
       password,
       username: req.body.username,
-      number: req.body.number,
     };
 
     try {
@@ -70,6 +69,50 @@ const userController = {
       }
     } catch (err) {
       response(res, 404, false, err, " register fail");
+    }
+  },
+  update: async (req, res) => {
+    try {
+      const { id } = req.payload;
+
+      const image = await cloudinary.uploader.upload(req.file.path, {
+        folder: "toko",
+      });
+
+      const data = {
+        id,
+        username: req.body.username,
+        photo: image.url,
+        bio: req.body.bio,
+        phonenumber: req.body.phonenumber,
+      };
+
+      await ModelUsers.update(data);
+      return response(res, 200, true, null, "UPDATE AIRLINES DATA SUCCESS");
+    } catch (error) {
+      return response(res, 404, true, error, "UPDATE AIRLINES DATA FAILED");
+    }
+  },
+  profile: async (req, res, next) => {
+    const { email } = req.payload;
+
+    try {
+      const {
+        rows: [users],
+      } = await ModelUsers.checkEmail(email);
+
+      if (users === undefined) {
+        res.json({
+          message: "invalid token",
+        });
+        return;
+      }
+
+      delete users.password;
+      response(res, 200, true, users, "get data success");
+    } catch (error) {
+      console.log(error);
+      response(res, 404, false, "get data fail");
     }
   },
 };

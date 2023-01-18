@@ -24,10 +24,10 @@ const list = (sender, receiver) => {
       `SELECT chats.id, chats.message, userSender.username AS sender, userReceiver.username AS receiver
         FROM chat as chats
         LEFT JOIN users AS userSender ON chats.sender_id=userSender.id
-        LEFT JOIN users AS userReceiver ON chats.receiver_id=userReceiver.id
+        LEFT JOIN users AS userReceiver ON chats.receiver_id=userReceiver.id 
         WHERE
         (sender_id='${sender}' AND receiver_id='${receiver}')
-        OR (sender_id='${receiver}' AND receiver_id='${sender}')`,
+        OR (sender_id='${receiver}' AND receiver_id='${sender}') ORDER BY created_at`,
       (err, res) => {
         if (err) {
           reject(err);
