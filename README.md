@@ -3,7 +3,7 @@
 
   <h3 align="center">Telegram Rest API</h3>
   <p align="center">
-    <image align="center" width="200" src='./logo.png' />
+    <image align="center" width="200" src='./Logo.png' />
   </p>
 
   <p align="center">
